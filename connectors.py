@@ -4,21 +4,12 @@ import json
 import requests
 import logging
 
-def init_log():
-    logger = logging.getLogger("router_tester")
-    logger.setLevel(logging.DEBUG)
-    formatter = logging.Formatter('%(asctime)s :: %(levelname)s :: %(message)s')
-    steam_handler = logging.StreamHandler()
-    steam_handler.setLevel(logging.DEBUG)
-    steam_handler.setFormatter(formatter)
-    logger.addHandler(steam_handler)
-    return logger
-
 def get_distance_and_duration_from_google_directions(from_tuple, to_tuple, mode):
     """
     Uses google directions API to compute journey and extract duration & distance
     """
-    if mode not in ("walking", "biking", "driving"):
+    logger = logging.getLogger(__name__)
+    if mode not in ("walking", "bicycling", "driving"):
         logger.error("Le mode {} est inconnu - valeurs acceptées : walking, biking, driving".format(mode))
         return
 
@@ -39,7 +30,6 @@ def get_distance_and_duration_from_google_directions(from_tuple, to_tuple, mode)
     return {'distance' : google_response['routes'][0]['legs'][0]['distance']['value'], 'duration': google_response['routes'][0]['legs'][0]['duration']['value']}
 
 if __name__ == '__main__':
-    logger = init_log()
 
     from_ = (48.75139,2.50588)
     to_ = (48.9771,3.0924)
