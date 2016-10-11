@@ -16,7 +16,7 @@ def mode_is_valid(mode_candidate):
     return mode_candidate in ("walking", "bicycling", "driving")
 
 
-def get_distance_and_duration_from_navitia(from_tuple, to_tuple, mode, coverage = "fr-auv", additionnal_params = {}):
+def get_distance_and_duration_from_navitia(from_tuple, to_tuple, mode, coverage="fr-auv", additionnal_params={}):
     """
     Call navitia to compute a non pt journey and extract duration & distance from the appropriate section
     """
@@ -34,7 +34,7 @@ def get_distance_and_duration_from_navitia(from_tuple, to_tuple, mode, coverage 
     url_params = dict(url_params, ** additionnal_params)
 
     url = NAVITIA_URL + "/coverage/{}/journeys".format(coverage)
-    call = requests.get(url, params = url_params,  headers={'Authorization': NAVITIA_TOKEN})
+    call = requests.get(url, params=url_params,  headers={'Authorization': NAVITIA_TOKEN})
     logger.debug(call.url)
     if not call.status_code == 200 :
         logger.error("Appel à navitia KO - status code : {}".format(call.status_code))
@@ -67,7 +67,7 @@ def get_distance_and_duration_from_google_directions(from_tuple, to_tuple, mode)
 
     url_params = {"origin": origin, "destination" : destination, "mode" : mode, "key": GOOGLE_TOKEN}
     url = "https://maps.googleapis.com/maps/api/directions/json"
-    call = requests.get(url, params = url_params)
+    call = requests.get(url, params=url_params)
     logger.debug(call.url)
     if call.status_code != 200 :
         logger.error("Appel à l'API Google KO - status code : {}".format(call.status_code))

@@ -25,7 +25,7 @@ if __name__ == '__main__':
     for a_test_case in get_test_cases_from_csv_file("./test_cases/auvergne.csv"):
         print("----- {} ".format(a_test_case))
         test_router_kraken = router.get_distance_and_duration_from_navitia(a_test_case["from"], a_test_case['to'], a_test_case["mode"])
-        test_router_valhalla = router.get_distance_and_duration_from_navitia(a_test_case["from"], a_test_case['to'], a_test_case["mode"], additionnal_params = {"_override_scenario": "experimental"})
+        test_router_valhalla = router.get_distance_and_duration_from_navitia(a_test_case["from"], a_test_case['to'], a_test_case["mode"], additionnal_params= {"_override_scenario": "experimental"})
         test_router_google = router.get_distance_and_duration_from_google_directions(a_test_case["from"], a_test_case['to'], a_test_case["mode"])
 
         if test_router_kraken :
