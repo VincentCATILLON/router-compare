@@ -1,2 +1,3 @@
 __pycache__/
+auth_params/
 test_cases/*.csv~

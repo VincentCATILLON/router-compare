@@ -3,6 +3,9 @@
 import json
 import requests
 import logging
+import auth_params
+
+GOOGLE_TOKEN = auth_params.google_api_key
 
 def get_distance_and_duration_from_google_directions(from_tuple, to_tuple, mode):
     """
@@ -16,7 +19,7 @@ def get_distance_and_duration_from_google_directions(from_tuple, to_tuple, mode)
     origin = "{},{}".format(from_tuple[0], from_tuple[1])
     destination = "{},{}".format(to_tuple[0], to_tuple[1])
 
-    url = "http://maps.googleapis.com/maps/api/directions/json?origin={}&destination={}&mode={}".format(origin, destination, mode)
+    url = "https://maps.googleapis.com/maps/api/directions/json?origin={}&destination={}&mode={}&key={}".format(origin, destination, mode, GOOGLE_TOKEN)
     logger.debug(url)
     call = requests.get(url)
     if call.status_code != 200 :
