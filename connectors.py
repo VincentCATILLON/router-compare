@@ -19,9 +19,10 @@ def get_distance_and_duration_from_google_directions(from_tuple, to_tuple, mode)
     origin = "{},{}".format(from_tuple[0], from_tuple[1])
     destination = "{},{}".format(to_tuple[0], to_tuple[1])
 
-    url = "https://maps.googleapis.com/maps/api/directions/json?origin={}&destination={}&mode={}&key={}".format(origin, destination, mode, GOOGLE_TOKEN)
-    logger.debug(url)
-    call = requests.get(url)
+    url_params = {"origin": origin, "destination" : destination, "mode" : mode, "key": GOOGLE_TOKEN}
+    url = "https://maps.googleapis.com/maps/api/directions/json"
+    call = requests.get(url, params = url_params)
+    logger.debug(call.url)
     if call.status_code != 200 :
         logger.error("Appel à l'API Google KO - status code : {}".format(call.status_code))
         return
@@ -31,16 +32,3 @@ def get_distance_and_duration_from_google_directions(from_tuple, to_tuple, mode)
         return
 
     return {'distance' : google_response['routes'][0]['legs'][0]['distance']['value'], 'duration': google_response['routes'][0]['legs'][0]['duration']['value']}
-
-if __name__ == '__main__':
-
-    from_ = (48.75139,2.50588)
-    to_ = (48.9771,3.0924)
-    #to_ = (3.0924,566)
-    test_router = get_distance_and_duration_from_google_directions(from_, to_, mode = "driving")
-
-    if test_router :
-        print("distance : {} km".format(test_router['distance']/1000.0))
-        print("durée : {} min".format(test_router['duration']/60.0))
-    else :
-        print("erreur")

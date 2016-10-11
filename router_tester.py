@@ -4,15 +4,9 @@ import csv
 import connectors as router
 import logging
 
-def init_log():
-    logger = logging.getLogger("connectors")
-    logger.setLevel(logging.DEBUG)
-    formatter = logging.Formatter('%(asctime)s :: %(levelname)s :: %(message)s')
-    steam_handler = logging.StreamHandler()
-    steam_handler.setLevel(logging.DEBUG)
-    steam_handler.setFormatter(formatter)
-    logger.addHandler(steam_handler)
-    return logger
+
+logging.basicConfig(level='DEBUG', format = '%(asctime)s :: %(levelname)s :: %(message)s')
+logging.getLogger("urllib3").setLevel(logging.WARNING)
 
 def get_test_cases_from_csv_file(csv_file) :
     with open(csv_file,'r') as f:
@@ -27,7 +21,6 @@ def get_test_cases_from_csv_file(csv_file) :
 
 
 if __name__ == '__main__':
-    logger = init_log()
 
     for a_test_case in get_test_cases_from_csv_file("./test_cases/auvergne.csv"):
         test_router = router.get_distance_and_duration_from_google_directions(a_test_case["from"], a_test_case['to'], a_test_case["mode"])
