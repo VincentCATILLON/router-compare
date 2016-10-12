@@ -7,6 +7,7 @@ import logging
 
 logging.basicConfig(level='DEBUG', format = '%(asctime)s :: %(levelname)s :: %(message)s')
 logging.getLogger("urllib3").setLevel(logging.WARNING)
+logger = logging.getLogger(__name__)
 
 def get_test_cases_from_csv_file(csv_file) :
     with open(csv_file,'r') as f:
@@ -28,14 +29,33 @@ def _persist_to_csv(file_name, data_dict, data_headers):
         for a_row in result_to_persist:
             writer.writerow(a_row)
 
-def get_results_as_csv_for_a_mode(test_results, mode):
+def get_results_as_csv_for_a_mode(test_results, mode, with_deviation_to_google = False):
+    logger.info("Génération de fichiers csv avec les résultats des tests pour le mode " + mode)
     results_filtered_by_mode = [a_test for a_test in test_results if a_test['mode']==mode]
-    
+
     fieldnames = ['id', 'kraken_distance', 'valhalla_distance', 'google_distance']
     _persist_to_csv("test_results/{}_distances.csv".format(mode), results_filtered_by_mode, fieldnames)
 
-    fieldnames = ['id', 'kraken_duration', 'valhalla_duration', 'google_duration']
-    _persist_to_csv("test_results/{}_durations.csv".format(mode), results_filtered_by_mode, fieldnames)
+    if with_deviation_to_google :
+        fieldnames = ['id', 'kraken_duration', 'valhalla_duration', 'google_duration']
+        _persist_to_csv("test_results/{}_durations.csv".format(mode), results_filtered_by_mode, fieldnames)
+
+        fieldnames = ['id', 'kraken_duration_deviation_with_google', 'valhalla_duration_deviation_with_google', 'kraken_distance_deviation_with_google', 'valhalla_distance_deviation_with_google']
+        _persist_to_csv("test_results/{}_deviations.csv".format(mode), results_filtered_by_mode, fieldnames)
+
+
+def soustract_me_if_you_can(one, two) :
+    if one and two :
+        return one - two
+
+def add_deviation_to_google(result_list) :
+    logger.info("Calcul des différences de distances et de durée en prenant google comme référence")
+    result_list = [dict({'kraken_distance_deviation_with_google' : soustract_me_if_you_can(a_test_result["kraken_distance"], a_test_result["google_distance"])}, **a_test_result) for a_test_result in result_list]
+    result_list = [dict({'kraken_duration_deviation_with_google' : soustract_me_if_you_can(a_test_result["kraken_duration"], a_test_result["google_duration"])}, **a_test_result) for a_test_result in result_list]
+    result_list = [dict({'valhalla_distance_deviation_with_google' : soustract_me_if_you_can(a_test_result["valhalla_distance"], a_test_result["google_distance"])}, **a_test_result) for a_test_result in result_list]
+    result_list = [dict({'valhalla_duration_deviation_with_google' : soustract_me_if_you_can(a_test_result["valhalla_duration"], a_test_result["google_duration"])}, **a_test_result) for a_test_result in result_list]
+    return result_list
+
 
 
 if __name__ == '__main__':
@@ -66,9 +86,10 @@ if __name__ == '__main__':
         else :
             test_result["google_distance"] = test_result["google_duration"] = None
 
-        print(test_result)
         test_result_list.append(test_result)
 
-    get_results_as_csv_for_a_mode(test_result_list, 'walking')
-    get_results_as_csv_for_a_mode(test_result_list, 'driving')
-    get_results_as_csv_for_a_mode(test_result_list, 'bicycling')
+    test_result_list = add_deviation_to_google(test_result_list)
+
+    get_results_as_csv_for_a_mode(test_result_list, 'walking', with_deviation_to_google = True)
+    get_results_as_csv_for_a_mode(test_result_list, 'driving', with_deviation_to_google = True)
+    get_results_as_csv_for_a_mode(test_result_list, 'bicycling', with_deviation_to_google = True)
