@@ -9,11 +9,13 @@ GOOGLE_TOKEN = auth_params.google_api_key
 NAVITIA_TOKEN = auth_params.navitia_api_key
 NAVITIA_URL = auth_params.navitia_base_url
 
+mode_mapping = {"walking": "walking", "driving" : "car", "bicycling": "bike"}
+
 logger = logging.getLogger(__name__)
 
 
 def mode_is_valid(mode_candidate):
-    return mode_candidate in ("walking", "bicycling", "driving")
+    return mode_candidate in mode_mapping
 
 
 def get_distance_and_duration_from_navitia(from_tuple, to_tuple, mode, coverage="fr-auv", additionnal_params={}):
@@ -23,7 +25,7 @@ def get_distance_and_duration_from_navitia(from_tuple, to_tuple, mode, coverage=
     if not mode_is_valid(mode):
         logger.error("Le mode {} est inconnu - valeurs acceptées : walking, biking, driving".format(mode))
         return
-    mode_mapping = {"walking": "walking", "driving" : "car", "bicycling": "bike"}
+
     fallback_mode = mode_mapping[mode]
     origin = "{};{}".format(from_tuple[1], from_tuple[0])
     destination = "{};{}".format(to_tuple[1], to_tuple[0])
@@ -31,7 +33,7 @@ def get_distance_and_duration_from_navitia(from_tuple, to_tuple, mode, coverage=
     url_params = {"from" : origin, "to": destination, "first_section_mode[]": fallback_mode, "last_section_mode[]" : fallback_mode}
     url_params["max_duration"] = 0 #force non PT journey
     url_params["count"] = 1
-    url_params = dict(url_params, ** additionnal_params)
+    url_params = dict(url_params, **additionnal_params)
 
     url = NAVITIA_URL + "/coverage/{}/journeys".format(coverage)
     call = requests.get(url, params=url_params,  headers={'Authorization': NAVITIA_TOKEN})
