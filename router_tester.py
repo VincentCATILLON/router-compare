@@ -1,8 +1,9 @@
 # encoding: utf-8
 
 import csv
-import connectors as router
 import logging
+import connectors as router
+import export_results as export
 
 
 logging.basicConfig(level='DEBUG', format = '%(asctime)s :: %(levelname)s :: %(message)s')
@@ -20,28 +21,6 @@ def get_test_cases_from_csv_file(csv_file) :
             test_case["mode"] = row['mode']
             test_case["id"] = row['id']
             yield test_case
-
-def _persist_to_csv(file_name, data_dict, data_headers):
-    result_to_persist = [ dict((k, result.get(k, None)) for k in data_headers) for result in data_dict]
-    with open(file_name, 'w', encoding='utf-8') as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=data_headers, delimiter=';')
-        writer.writeheader()
-        for a_row in result_to_persist:
-            writer.writerow(a_row)
-
-def get_results_as_csv_for_a_mode(test_results, mode, with_deviation_to_google = False):
-    logger.info("Génération de fichiers csv avec les résultats des tests pour le mode " + mode)
-    results_filtered_by_mode = [a_test for a_test in test_results if a_test['mode']==mode]
-
-    fieldnames = ['id', 'kraken_distance', 'valhalla_distance', 'google_distance']
-    _persist_to_csv("test_results/{}_distances.csv".format(mode), results_filtered_by_mode, fieldnames)
-
-    if with_deviation_to_google :
-        fieldnames = ['id', 'kraken_duration', 'valhalla_duration', 'google_duration']
-        _persist_to_csv("test_results/{}_durations.csv".format(mode), results_filtered_by_mode, fieldnames)
-
-        fieldnames = ['id', 'kraken_duration_deviation_with_google', 'valhalla_duration_deviation_with_google', 'kraken_distance_deviation_with_google', 'valhalla_distance_deviation_with_google']
-        _persist_to_csv("test_results/{}_deviations.csv".format(mode), results_filtered_by_mode, fieldnames)
 
 
 def soustract_me_if_you_can(one, two) :
@@ -90,6 +69,11 @@ if __name__ == '__main__':
 
     test_result_list = add_deviation_to_google(test_result_list)
 
-    get_results_as_csv_for_a_mode(test_result_list, 'walking', with_deviation_to_google = True)
-    get_results_as_csv_for_a_mode(test_result_list, 'driving', with_deviation_to_google = True)
-    get_results_as_csv_for_a_mode(test_result_list, 'bicycling', with_deviation_to_google = True)
+    export.get_results_as_box_for_a_mode(test_result_list, 'walking')
+    export.get_results_as_csv_for_a_mode(test_result_list, 'walking')
+
+    export.get_results_as_box_for_a_mode(test_result_list, 'driving')
+    export.get_results_as_csv_for_a_mode(test_result_list, 'driving')
+
+    export.get_results_as_box_for_a_mode(test_result_list, 'bicycling')
+    export.get_results_as_csv_for_a_mode(test_result_list, 'bicycling')
