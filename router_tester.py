@@ -24,10 +24,10 @@ def get_test_cases_from_csv_file(csv_file) :
 
 def add_deviation_to_google(result_list) :
     logger.info("Calcul des différences de distances et de durée en prenant google comme référence")
-    result_list = [dict({'kraken_distance_deviation_with_google' : a_test_result["kraken_distance"] - a_test_result["google_distance"]}, **a_test_result) for a_test_result in result_list]
-    result_list = [dict({'kraken_duration_deviation_with_google' : a_test_result["kraken_duration"] - a_test_result["google_duration"]}, **a_test_result) for a_test_result in result_list]
-    result_list = [dict({'valhalla_distance_deviation_with_google' : a_test_result["valhalla_distance"] - a_test_result["google_distance"]}, **a_test_result) for a_test_result in result_list]
-    result_list = [dict({'valhalla_duration_deviation_with_google' : a_test_result["valhalla_duration"] - a_test_result["google_duration"]}, **a_test_result) for a_test_result in result_list]
+    result_list = [dict({'kraken_distance_deviation_with_google' : 100 * (a_test_result["kraken_distance"] - a_test_result["google_distance"]) /a_test_result["google_distance"]}, **a_test_result) for a_test_result in result_list]
+    result_list = [dict({'kraken_duration_deviation_with_google' : 100 * (a_test_result["kraken_duration"] - a_test_result["google_duration"]) / a_test_result["google_duration"]}, **a_test_result) for a_test_result in result_list]
+    result_list = [dict({'valhalla_distance_deviation_with_google' : 100 * (a_test_result["valhalla_distance"] - a_test_result["google_distance"]) /a_test_result["google_distance"]}, **a_test_result) for a_test_result in result_list]
+    result_list = [dict({'valhalla_duration_deviation_with_google' : 100 * (a_test_result["valhalla_duration"] - a_test_result["google_duration"]) / a_test_result["google_duration"]}, **a_test_result) for a_test_result in result_list]
     return result_list
 
 def remove_not_consistent_test_retults(result_list) :
