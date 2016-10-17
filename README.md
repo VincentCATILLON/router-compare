@@ -1,9 +1,35 @@
+Router compare
+==============
+
 Compare distance and duration from several navitia routers.
 
-## Intalling
+## Dependencies
 
-Python3 is needed.
+To install the dependencies use `pip3`:
 
-Duplicate the auth_params_template folder and rename to auth_params
+```bash
+pip3 install -r requirements.txt
+````
 
-Put your api keys in the params/__init__.py
+
+## Installation
+
+Duplicate the auth_params_template folder and rename to auth_params.
+
+Put your api keys in `auth_params/__init__.py` file:
+
+```python
+google_api_key = "<Your Google Maps API key>"
+
+navitia_api_key = "<Your Navitia API key>"
+navitia_base_url = "https://api.navitia.io/v1"
+```
+
+
+## Usage
+
+To generate a performance comparison chart:
+
+```bash
+python3 router_tester.py
+```
